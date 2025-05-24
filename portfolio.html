@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Презентация портфолио</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;700&family=PT+Sans:wght@400;700&family=Calibri&family=Georgia&family=Arial&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6e8efb;
+            --secondary: #a777e3;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: var(--dark);
+            overflow: hidden;
+        }
+
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 100%;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+            gap: 20px;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .toolbar.hidden {
+            transform: translateX(-60px);
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .presentation-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slides-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 80px 100px;
+            background: white;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 15px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .slide-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .slide.active .slide-title {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.3s;
+        }
+
+        .slide-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .slide.active .slide-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.5s;
+        }
+
+        .editable {
+            min-height: 20px;
+            padding: 5px;
+            border-radius: 4px;
+            transition: var(--transition);
+            cursor: text;
+            outline: none;
+        }
+
+        .editable:hover {
+            background-color: rgba(110, 142, 251, 0.1);
+        }
+
+        .editable:focus {
+            background-color: rgba(110, 142, 251, 0.15);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .profile-container {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .profile-text {
+            flex: 1;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        .profile-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image-upload {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-image-upload:hover {
+            transform: scale(1.1);
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill {
+            background: rgba(110, 142, 251, 0.1);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .skill:hover {
+            transform: translateY(-3px);
+            background: rgba(110, 142, 251, 0.2);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .project-card {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 25px;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .add-project {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(110, 142, 251, 0.1);
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .add-project:hover {
+            background: rgba(110, 142, 251, 0.2);
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .certificate-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .certificate-card:hover {
+            transform: scale(1.03);
+        }
+
+        .certificate-image {
+            height: 200px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .certificate-image-upload {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+            max-width: 600px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 15px;
+            transition: var(--transition);
+            width: 100%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .contact-item:hover {
+            transform: translateX(10px);
+            background: rgba(110, 142, 251, 0.1);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .fullscreen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(0,0,0,0.3);
+            transform: scale(1.1);
+        }
+
+        .slide-nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .slide-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slide-dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+        }
+
+        @media (max-width: 992px) {
+            .slide {
+                padding: 60px;
+            }
+            
+            .profile-container {
+                flex-direction: column;
+            }
+            
+            .profile-image {
+                align-self: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 30px;
+            }
+            
+            .slide-title {
+                font-size: 2rem;
+            }
+            
+            .profile-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .projects-grid, .certificates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toolbar {
+                transform: translateX(-60px);
+            }
+            
+            .toolbar.visible {
+                transform: translateX(0);
+            }
+        }
+
+        .text-red { color: #ff4d4d; }
+        .text-blue { color: #4d79ff; }
+        .text-green { color: #4dff4d; }
+        .text-purple { color: #b34dff; }
+        .text-orange { color: #ffa64d; }
+        .text-bold { font-weight: bold; }
+        .text-italic { font-style: italic; }
+        .text-underline { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="toolbar" id="toolbar">
+        <button class="tool-btn" id="text-tool" title="Форматирование текста">
+            <i class="fas fa-font"></i>
+        </button>
+        <button class="tool-btn" id="color-tool" title="Цвет текста">
+            <i class="fas fa-palette"></i>
+        </button>
+        <button class="tool-btn" id="theme-tool" title="Тема оформления">
+            <i class="fas fa-paint-brush"></i>
+        </button>
+        <button class="tool-btn" id="image-tool" title="Добавить изображение">
+            <i class="fas fa-image"></i>
+        </button>
+        <button class="tool-btn" id="animation-tool" title="Анимации">
+            <i class="fas fa-film"></i>
+        </button>
+        <button class="tool-btn" id="toggle-toolbar" title="Скрыть панель">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h3>Настройки презентации</h3>
+            <button id="close-settings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="settings-section" id="font-section">
+            <h4 class="settings-title"><i class="fas fa-font"></i> Шрифт</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+                <button class="tool-btn" data-font="'Montserrat', sans-serif">Montserrat</button>
+                <button class="tool-btn" data-font="'Roboto', sans-serif">Roboto</button>
+                <button class="tool-btn" data-font="'Playfair Display', serif">Playfair</button>
+                <button class="tool-btn" data-font="'Open Sans', sans-serif">Open Sans</button>
+                <button class="tool-btn" data-font="'PT Sans', sans-serif">PT Sans</button>
+                <button class="tool-btn" data-font="'Calibri', sans-serif">Calibri</button>
+                <button class="tool-btn" data-font="'Georgia', serif">Georgia</button>
+                <button class="tool-btn" data-font="'Arial', sans-serif">Arial</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label>Размер шрифта</label>
+                <input type="range" min="12" max="72" value="16" id="font-size">
+            </div>
+        </div>
+        
+        <div class="settings-section" id="color-section">
+            <h4 class="settings-title"><i class="fas fa-palette"></i> Цвет текста</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <button class="tool-btn text-red" data-color="red" style="color: #ff4d4d;">Красный</button>
+                <button class="tool-btn text-blue" data-color="blue" style="color: #4d79ff;">Синий</button>
+                <button class="tool-btn text-green" data-color="green" style="color: #4dff4d;">Зелёный</button>
+                <button class="tool-btn text-purple" data-color="purple" style="color: #b34dff;">Фиолетовый</button>
+                <button class="tool-btn text-orange" data-color="orange" style="color: #ffa64d;">Оранжевый</button>
+                <button class="tool-btn" data-color="black" style="color: #000;">Чёрный</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button class="tool-btn text-bold" id="bold-btn"><i class="fas fa-bold"></i> Жирный</button>
+                <button class="tool-btn text-italic" id="italic-btn"><i class="fas fa-italic"></i> Курсив</button>
+                <button class="tool-btn text-underline" id="underline-btn"><i class="fas fa-underline"></i> Подчёркивание</button>
+            </div>
+        </div>
+        
+        <div class="settings-section" id="theme-section">
+            <h4 class="settings-title"><i class="fas fa-paint-brush"></i> Тема</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <button class="tool-btn" data-theme="light">Светлая</button>
+                <button class="tool-btn" data-theme="dark">Тёмная</button>
+                <button class="tool-btn" data-theme="professional">Профессиональная</button>
+                <button class="tool-btn" data-theme="creative">Креативная</button>
+            </div>
+        </div>
+        
+        <div class="settings-section" id="animation-section">
+            <h4 class="settings-title"><i class="fas fa-film"></i> Анимации</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <button class="tool-btn" data-animation="fadeIn">Появление</button>
+                <button class="tool-btn" data-animation="slideInLeft">Слева</button>
+                <button class="tool-btn" data-animation="slideInRight">Справа</button>
+                <button class="tool-btn" data-animation="zoomIn">Увеличение</button>
+                <button class="tool-btn" data-animation="slideInUp">Снизу</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label>Скорость анимации</label>
+                <input type="range" min="0.1" max="2" step="0.1" value="0.6" id="animation-speed">
+            </div>
+        </div>
+        
+        <div class="settings-section" id="transition-section">
+            <h4 class="settings-title"><i class="fas fa-exchange-alt"></i> Переходы между слайдами</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                <button class="tool-btn" data-transition="slide">Слайд</button>
+                <button class="tool-btn" data-transition="fade">Плавное</button>
+                <button class="tool-btn" data-transition="zoom">Увеличение</button>
+                <button class="tool-btn" data-transition="convex">Выпуклый</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label>Скорость перехода</label>
+                <input type="range" min="0.1" max="2" step="0.1" value="0.6" id="transition-speed">
+            </div>
+        </div>
+    </div>
+
+    <button class="fullscreen-btn" id="fullscreen-btn" title="Полноэкранный режим">
+        <i class="fas fa-expand"></i>
+    </button>
+
+    <div class="presentation-container" id="presentation-container">
+        <div class="slides-wrapper" id="slides-wrapper">
+        </div>
+    </div>
+
+    <div class="slide-nav" id="slide-nav">
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="prev-slide" title="Предыдущий слайд">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="control-btn" id="next-slide" title="Следующий слайд">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="control-btn" id="save-btn" title="Сохранить презентацию">
+            <i class="fas fa-save"></i>
+        </button>
+        <button class="control-btn" id="export-btn" title="Экспорт в PDF">
+            <i class="fas fa-file-pdf"></i>
+        </button>
+    </div>
+
+    <script>
+        const portfolioData = JSON.parse(localStorage.getItem('portfolioData')) || {
+            name: "Иван Иванов",
+            job: "Веб-разработчик",
+            about: "Я профессиональный веб-разработчик с 5-летним опытом работы. Специализируюсь на создании современных веб-приложений с использованием React и Node.js.",
+            skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
+            projects: ["Корпоративный сайт для компании X", "Интернет-магазин мебели", "Мобильное приложение для заказа еды"],
+            email: "ivan.ivanov@example.com",
+            theme: "minimal"
+        };
+
+        portfolioData.phone = portfolioData.phone || "+7 (123) 456-7890";
+        portfolioData.social = portfolioData.social || "@ivan_developer";
+
+        let currentSlide = 0;
+        let slidesCount = 0;
+        let isFullscreen = false;
+        let animationSpeed = 0.6;
+        let transitionSpeed = 0.6;
+        let transitionType = 'slide';
+
+        function generateProfessionText(profession) {
+            const texts = {
+                "веб-разработчик": `Как веб-разработчик с опытом работы, я специализируюсь на создании современных, отзывчивых веб-приложений. 
+                Моя работа включает в себя проектирование архитектуры приложений, написание чистого и эффективного кода, 
+                а также тесное взаимодействие с дизайнерами и другими членами команды для достижения наилучших результатов.`,
+                
+                "дизайнер": `Как дизайнер, я сосредоточен на создании эстетичных и функциональных интерфейсов. 
+                Моя работа включает исследование пользовательского опыта, создание прототипов и визуальных концепций, 
+                а также тестирование дизайна на реальных пользователях для достижения оптимального результата.`,
+                
+                "программист": `Как программист, я обладаю глубокими знаниями в области разработки программного обеспечения. 
+                Моя работа включает анализ требований, проектирование архитектуры, написание и тестирование кода, 
+                а также постоянное обучение новым технологиям и методологиям разработки.`,
+                
+                "маркетолог": `Как маркетолог, я специализируюсь на разработке и реализации стратегий продвижения. 
+                Моя работа включает анализ рынка, сегментацию аудитории, создание контент-стратегий и 
+                измерение эффективности маркетинговых кампаний для достижения бизнес-целей.`
+            };
+            
+            const lowerProfession = profession.toLowerCase();
+            return texts[lowerProfession] || `Как ${profession}, я обладаю уникальным набором навыков и опытом, которые позволяют мне эффективно решать профессиональные задачи. 
+            Моя работа включает анализ потребностей, разработку решений и их реализацию для достижения наилучших результатов.`;
+        }
+
+        function generateAboutText(about) {
+            const baseText = about;
+            const additionalTexts = [
+                "В своей работе я уделяю особое внимание качеству и деталям. Постоянное обучение и развитие - это мой основной принцип, который позволяет мне оставаться в курсе последних тенденций в моей области.",
+                "Я убеждён, что успех любого проекта зависит от слаженной работы команды и чёткого понимания целей. Именно поэтому я всегда стараюсь наладить эффективную коммуникацию со всеми участниками процесса.",
+                "Мой подход к работе сочетает в себе творческое мышление и аналитический подход. Это позволяет мне находить нестандартные решения сложных задач и реализовывать их на практике.",
+                "За время своей карьеры я работал над множеством проектов различного масштаба - от небольших локальных решений до крупных корпоративных систем. Этот опыт научил меня быстро адаптироваться к новым условиям и находить оптимальные пути решения задач.",
+                "Я ценю в работе не только результат, но и сам процесс. Для меня важно, чтобы каждый этап работы был продуманным, логичным и приносил удовлетворение как мне, так и клиенту."
+            ];
+            
+            const randomAdditional = additionalTexts[Math.floor(Math.random() * additionalTexts.length)];
+            
+            return `${baseText} ${randomAdditional}`;
+        }
+
+        function generateProjectDescription(projectName) {
+            const techs = ["React", "Node.js", "MongoDB", "Express", "Redux", "TypeScript", "Vue.js", "Angular", "Django", "Flask", "Laravel"];
+            const randomTechs = [...techs].sort(() => 0.5 - Math.random()).slice(0, 3);
+            
+            const descriptions = [
+                `Проект "${projectName}" был разработан с использованием ${randomTechs.join(", ")}. Основной задачей было создание удобного интерфейса и надежной backend-части. В ходе работы были реализованы сложные механизмы взаимодействия и обеспечена высокая производительность системы.`,
+                `В рамках проекта "${projectName}" я занимался разработкой на ${randomTechs.join(", ")}. Были созданы основные функциональные модули, реализована интеграция со сторонними сервисами и обеспечена безопасность данных.`,
+                `"${projectName}" - это проект, где я применил ${randomTechs.join(", ")} для решения бизнес-задач. Особое внимание было уделено UX/UI дизайну и оптимизации процессов, что значительно улучшило пользовательский опыт.`,
+                `Разрабатывая "${projectName}", я использовал ${randomTechs.join(", ")} для создания масштабируемого и поддерживаемого решения. Проект включал в себя разработку API, админ-панели и мобильной адаптации.`
+            ];
+            
+            return descriptions[Math.floor(Math.random() * descriptions.length)];
+        }
+
+        function generateSlides() {
+            const wrapper = document.getElementById('slides-wrapper');
+            const nav = document.getElementById('slide-nav');
+            
+            wrapper.innerHTML = '';
+            nav.innerHTML = '';
+            
+            const slide1 = document.createElement('div');
+            slide1.className = 'slide';
+            slide1.innerHTML = `
+                <h2 class="slide-title">Добро пожаловать в моё портфолио</h2>
+                <div class="slide-content">
+                    <div class="profile-container">
+                        <div class="profile-text editable" contenteditable="true" id="slide1-text">
+                            <p>Меня зовут <strong>${portfolioData.name}</strong>, я <strong>${portfolioData.job}</strong>.</p>
+                            <p>${generateProfessionText(portfolioData.job)}</p>
+                            <p>Мои ключевые навыки: ${portfolioData.skills.join(", ")}.</p>
+                            <p>В этом портфолио я собрал свои лучшие работы и профессиональные достижения.</p>
+                        </div>
+                        <div class="profile-image" id="profile-image">
+                            <i class="fas fa-user fa-5x" style="color: #ccc;"></i>
+                            <div class="profile-image-upload">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(slide1);
+            
+            const slide2 = document.createElement('div');
+            slide2.className = 'slide';
+            slide2.innerHTML = `
+                <h2 class="slide-title">Обо мне</h2>
+                <div class="slide-content">
+                    <div class="profile-container">
+                        <div class="profile-text editable" contenteditable="true" id="slide2-text">
+                            ${generateAboutText(portfolioData.about)}
+                        </div>
+                        <div class="skills-container">
+                            <h3>Ключевые компетенции</h3>
+                            <ul style="margin-top: 15px; padding-left: 20px;">
+                                <li>Профессиональный опыт</li>
+                                <li>Техническая экспертиза</li>
+                                <li>Решение сложных задач</li>
+                                <li>Работа в команде</li>
+                                <li>Постоянное развитие</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(slide2);
+            
+            const slide3 = document.createElement('div');
+            slide3.className = 'slide';
+            slide3.innerHTML = `
+                <h2 class="slide-title">Мои проекты</h2>
+                <div class="slide-content">
+                    <div class="projects-grid" id="projects-grid">
+                        ${portfolioData.projects.map(project => `
+                            <div class="project-card">
+                                <h3 class="editable" contenteditable="true">${project}</h3>
+                                <p class="editable" contenteditable="true">
+                                    ${generateProjectDescription(project)}
+                                </p>
+                            </div>
+                        `).join('')}
+                        <div class="add-project" id="add-project">
+                            <i class="fas fa-plus-circle" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                            <div>Добавить проект</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(slide3);
+            
+            const slide4 = document.createElement('div');
+            slide4.className = 'slide';
+            slide4.innerHTML = `
+                <h2 class="slide-title">Мои сертификаты</h2>
+                <div class="slide-content">
+                    <div class="certificates-grid">
+                        <div class="certificate-card">
+                            <div class="certificate-image">
+                                <i class="fas fa-certificate fa-4x" style="color: #ccc;"></i>
+                                <div class="certificate-image-upload">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" class="certificate-upload" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="certificate-details" style="padding: 15px;">
+                                <div class="editable" contenteditable="true" style="min-height: 60px;">Название сертификата</div>
+                            </div>
+                        </div>
+                        <div class="certificate-card">
+                            <div class="certificate-image">
+                                <i class="fas fa-certificate fa-4x" style="color: #ccc;"></i>
+                                <div class="certificate-image-upload">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" class="certificate-upload" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="certificate-details" style="padding: 15px;">
+                                <div class="editable" contenteditable="true" style="min-height: 60px;">Название сертификата</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(slide4);
+            
+            const slide5 = document.createElement('div');
+            slide5.className = 'slide';
+            slide5.innerHTML = `
+                <h2 class="slide-title">Контакты</h2>
+                <div class="slide-content">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <div class="editable" contenteditable="true">${portfolioData.email}</div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <div class="editable" contenteditable="true">${portfolioData.phone}</div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div>
+                                <div class="editable" contenteditable="true">${portfolioData.social}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wrapper.appendChild(slide5);
+            
+            slidesCount = wrapper.children.length;
+            for (let i = 0; i < slidesCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'slide-dot';
+                dot.dataset.slide = i;
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                nav.appendChild(dot);
+            }
+            
+            setTimeout(() => {
+                document.querySelectorAll('.slide')[0].classList.add('active');
+            }, 100);
+            
+            initEditor();
+        }
+        
+        function goToSlide(index) {
+            if (index < 0 || index >= slidesCount) return;
+            
+            const wrapper = document.getElementById('slides-wrapper');
+            const dots = document.querySelectorAll('.slide-dot');
+            
+            currentSlide = index;
+            
+            wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            dots.forEach((dot, i) => {
+                if (i === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+            
+            const currentActiveSlide = document.querySelector('.slide.active');
+            if (currentActiveSlide) {
+                currentActiveSlide.classList.remove('active');
+            }
+            
+            const newActiveSlide = document.querySelectorAll('.slide')[currentSlide];
+            newActiveSlide.classList.add('active');
+        }
+        
+        function nextSlide() {
+            if (currentSlide < slidesCount - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        function toggleFullscreen() {
+            const elem = document.documentElement;
+            
+            if (!isFullscreen) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                isFullscreen = true;
+                document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                isFullscreen = false;
+                document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        }
+        
+        function initEditor() {
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const toolId = this.id;
+                    
+                    document.querySelectorAll('.settings-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    if (toolId === 'text-tool') {
+                        document.getElementById('font-section').style.display = 'block';
+                    } else if (toolId === 'color-tool') {
+                        document.getElementById('color-section').style.display = 'block';
+                    } else if (toolId === 'theme-tool') {
+                        document.getElementById('theme-section').style.display = 'block';
+                    } else if (toolId === 'animation-tool') {
+                        document.getElementById('animation-section').style.display = 'block';
+                    }
+                    
+                    document.getElementById('settings-panel').classList.add('open');
+                });
+            });
+            
+            document.getElementById('close-settings').addEventListener('click', function() {
+                document.getElementById('settings-panel').classList.remove('open');
+            });
+            
+            document.querySelectorAll('[data-font]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const fontFamily = this.getAttribute('data-font');
+                    document.querySelectorAll('.editable').forEach(el => {
+                        el.style.fontFamily = fontFamily;
+                    });
+                });
+            });
+            
+            document.querySelectorAll('[data-color]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const color = this.getAttribute('data-color');
+                    document.execCommand('foreColor', false, color);
+                });
+            });
+            
+            document.getElementById('bold-btn').addEventListener('click', function() {
+                document.execCommand('bold', false, null);
+            });
+            
+            document.getElementById('italic-btn').addEventListener('click', function() {
+                document.execCommand('italic', false, null);
+            });
+            
+            document.getElementById('underline-btn').addEventListener('click', function() {
+                document.execCommand('underline', false, null);
+            });
+            
+            document.getElementById('font-size').addEventListener('input', function() {
+                document.querySelectorAll('.editable').forEach(el => {
+                    el.style.fontSize = this.value + 'px';
+                });
+            });
+            
+            document.querySelectorAll('[data-animation]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const animation = this.getAttribute('data-animation');
+                    document.querySelectorAll('.slide-title').forEach(el => {
+                        el.style.animation = `${animation} ${animationSpeed}s ease forwards`;
+                    });
+                    document.querySelectorAll('.slide-content').forEach(el => {
+                        el.style.animation = `${animation} ${animationSpeed}s ease forwards`;
+                    });
+                });
+            });
+            
+            document.getElementById('animation-speed').addEventListener('input', function() {
+                animationSpeed = parseFloat(this.value);
+            });
+            
+            document.querySelectorAll('[data-transition]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    transitionType = this.getAttribute('data-transition');
+                    const wrapper = document.getElementById('slides-wrapper');
+                    wrapper.style.transition = `transform ${transitionSpeed}s ${transitionType}`;
+                });
+            });
+            
+            document.getElementById('transition-speed').addEventListener('input', function() {
+                transitionSpeed = parseFloat(this.value);
+                const wrapper = document.getElementById('slides-wrapper');
+                wrapper.style.transition = `transform ${transitionSpeed}s ${transitionType}`;
+            });
+            
+            document.querySelectorAll('.profile-image-upload, .certificate-image-upload').forEach(uploadBtn => {
+                uploadBtn.addEventListener('click', function() {
+                    const input = this.querySelector('input[type="file"]');
+                    input.click();
+                });
+            });
+            
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const container = this.closest('.profile-image, .certificate-image');
+                            container.innerHTML = `<img src="${e.target.result}">` + container.innerHTML;
+                        }.bind(this);
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            });
+            
+            document.getElementById('add-project').addEventListener('click', function() {
+                const projectsGrid = document.getElementById('projects-grid');
+                const newProject = document.createElement('div');
+                newProject.className = 'project-card';
+                newProject.innerHTML = `
+                    <h3 class="editable" contenteditable="true">Новый проект</h3>
+                    <p class="editable" contenteditable="true">
+                        Опишите ваш проект здесь. Какие технологии использовались, какие задачи решались и какие результаты были достигнуты.
+                    </p>
+                `;
+                projectsGrid.insertBefore(newProject, this);
+            });
+            
+            document.getElementById('save-btn').addEventListener('click', function() {
+                const presentationData = {
+                    slides: [],
+                    theme: 'light',
+                    updatedAt: new Date().toISOString()
+                };
+                
+                document.querySelectorAll('.slide').forEach((slide, index) => {
+                    presentationData.slides.push({
+                        id: index + 1,
+                        content: slide.innerHTML
+                    });
+                });
+                
+                localStorage.setItem('portfolioPresentation', JSON.stringify(presentationData));
+                alert('Презентация успешно сохранена!');
+            });
+            
+            document.getElementById('export-btn').addEventListener('click', function() {
+                alert('Функция экспорта в PDF будет реализована в будущем');
+            });
+            
+            document.getElementById('toggle-toolbar').addEventListener('click', function() {
+                document.getElementById('toolbar').classList.toggle('hidden');
+                this.innerHTML = document.getElementById('toolbar').classList.contains('hidden') ? 
+                    '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-left"></i>';
+            });
+            
+            document.getElementById('next-slide').addEventListener('click', nextSlide);
+            document.getElementById('prev-slide').addEventListener('click', prevSlide);
+            
+            document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                } else if (e.key === 'f11') {
+                    e.preventDefault();
+                    toggleFullscreen();
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', generateSlides);
+    </script>
+</body>
+</html>
